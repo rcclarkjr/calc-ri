@@ -1,0 +1,56 @@
+Prompt for Representational Index (RI)
+
+Variables:
+[first name] = Unknown
+[last name] = Unknown
+[artist name] = [first name] [last name]
+[title] = In the Rain
+[dimensions] = 36 x 36 inches
+[media] = Acrylic on Canvas
+
+Instructions:
+Evaluate the attached artwork and calculate the Representational Index (RI) based on the provided definitions. Use the scoring methodology detailed below to ensure consistency in evaluation. Provide your final RI score rounded to one decimal place of precision.
+________________________________________
+Definitions of the 5 Categories Comprising the RI (Scale of 1 to 5):
+1.	Pure Abstract (Non-Representational):
+o	Definition: Art that does not depict recognizable objects or subjects. It focuses entirely on form, color, texture, and composition without a reference to the observable world.
+o	Examples: Wassily Kandinsky, Piet Mondrian, Mark Rothko.
+o	Numerical Value: 1
+2.	Abstract Expressionism (Suggestive Abstraction):
+o	Definition: Art that begins to hint at real-world forms or emotions but remains highly abstract. There may be dynamic gestures or loosely suggestive shapes, but interpretation is left to the viewer.
+o	Examples: Jackson Pollock’s drip paintings, Willem de Kooning’s abstracted figures.
+o	Numerical Value: 2
+3.	Semi-Abstraction (Stylized Representation):
+o	Definition: Art where recognizable forms or subjects are present but are heavily stylized, simplified, or abstracted. There’s a clear reference to reality, but it’s transformed into something more symbolic or decorative.
+o	Examples: Cubism (e.g., Pablo Picasso’s Les Demoiselles d'Avignon), Henri Matisse’s The Red Studio.
+o	Numerical Value: 3
+4.	Representational with Artistic Interpretation (Stylized Realism, Abstract Realism):
+o	Definition: Art depicting real-world subjects with noticeable artistic intervention, stylization, or emotive exaggeration. Realistic elements deviate for expressive or conceptual purposes.
+o	Examples: Impressionism (e.g., Claude Monet’s Water Lilies), Surrealism (e.g., Salvador Dalí’s The Persistence of Memory).
+o	Numerical Value: 4
+5.	Photo-Realism (Hyper-Realistic Representation):
+o	Definition: Art that mimics the appearance of a photograph, achieving an almost indistinguishable resemblance to reality through meticulous detail and accuracy.
+o	Examples: Chuck Close, Richard Estes, Audrey Flack.
+o	Numerical Value: 5
+________________________________________
+Scoring Methodology for Consistency:
+1.	Primary Category Identification:
+o	Begin by identifying the primary category that most closely aligns with the artwork’s characteristics. Assign this as the base category score.
+2.	Secondary Category Consideration (if applicable):
+o	If the artwork contains significant traits of another category, assign a secondary score. Use this score to reflect the secondary influence, but weight it proportionally based on how dominant the traits are in the artwork.
+3.	Averaging and Weighting Instructions:
+o	If only one category applies, the RI is equal to the category's numerical value.
+o	If two categories apply:
+	Assign weights based on visual dominance. (For example, 70% for the dominant category and 30% for the secondary category.)
+	Compute the weighted average as:
+RI=(Primary Score×Primary Weight)+(Secondary Score×Secondary Weight)\text{RI} = (\text{Primary Score} \times \text{Primary Weight}) + (\text{Secondary Score} \times \text{Secondary Weight})RI=(Primary Score×Primary Weight)+(Secondary Score×Secondary Weight)
+o	Always round the final RI to one decimal place.
+4.	Consistency Across Runs:
+o	Use the same structured methodology and evaluation framework in all subsequent analyses to ensure consistent results.
+________________________________________
+Output Format:
+1.	Analysis:
+o	Break down how the artwork aligns with one or more categories based on its characteristics. Clearly describe the rationale behind the chosen primary and (if applicable) secondary categories.
+2.	Concluded Representational Index (RI):
+o	Provide the final RI score in the format:
+RI = n.n
