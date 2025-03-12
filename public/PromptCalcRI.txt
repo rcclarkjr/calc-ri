@@ -41,4 +41,4 @@ Provide only the following in your response:
 2. Two to three sentences explaining your assessment:
    • For single-category scores: Explain why the artwork fits fully within that category
    • For blended scores: Describe how elements of both primary and secondary categories are present
-Do not include any additional analysis, commentary, or descriptions beyond these elements.
+Do not include any additional analysis, commentary, or descriptions beyond these elements.  Do not mention the examples provided in this prompt for each of the 5 Categories. 
