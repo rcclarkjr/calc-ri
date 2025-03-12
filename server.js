@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// Configure CORS to accept requests from your sites
+// Configure CORS to accept requests from all your sites
 app.use(cors({
   origin: [
     'https://robert-clark-4dee.mykajabi.com', 
@@ -19,9 +19,21 @@ app.use(cors({
     'https://ri-backend-bozm.onrender.com',
     'https://advisory.valoraanalytics.com'  // Add this new origin
   ],
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Add a fallback CORS handler for any missed routes
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+  next();
+});
 
 // Serve static files from the "public" folder (for serving prompts and images)
 app.use(express.static("public"));
@@ -30,10 +42,6 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 // Endpoint to serve the RI calculation prompt
 app.get("/PromptCalcRI.txt", (req, res) => {
-  // Add CORS headers explicitly for this endpoint
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET");
-  
   // If the file exists, serve it, otherwise send the default prompt
   const promptPath = path.join(__dirname, "public", "PromptCalcRI.txt");
   
@@ -103,24 +111,37 @@ Do not include any additional analysis, commentary, or descriptions beyond what 
 }
 
 app.post("/analyze", async (req, res) => {
-  // Add CORS headers explicitly for this endpoint
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "POST");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  
   try {
+    console.log("Received analyze request");
     const { prompt, image, artTitle, artistName } = req.body;
 
-    if (!prompt || !image) {
-      return res.status(400).json({ error: "Prompt and image are required" });
+    if (!prompt) {
+      console.log("Missing prompt in request");
+      return res.status(400).json({ error: { message: "Prompt is required" } });
+    }
+    
+    if (!image) {
+      console.log("Missing image in request");
+      return res.status(400).json({ error: { message: "Image is required" } });
     }
 
+    if (!OPENAI_API_KEY) {
+      console.log("Missing OpenAI API key");
+      return res.status(500).json({ error: { message: "Server configuration error: Missing API key" } });
+    }
+
+    // Log info about the request (without the full image data for brevity)
+    console.log(`Processing request for artwork: "${artTitle}" by ${artistName}`);
+    console.log(`Prompt length: ${prompt.length} characters`);
+    
     // Construct the prompt with art title and artist name
     const finalPrompt = `Title: "${artTitle}"
 Artist: "${artistName}"
 
 ${prompt}`;
 
+    console.log("Sending request to OpenAI API");
+    
     // Send request to OpenAI API
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
@@ -149,7 +170,15 @@ ${prompt}`;
       }
     );
 
+    console.log("Received response from OpenAI API");
+    
+    if (!response.data || !response.data.choices || !response.data.choices[0] || !response.data.choices[0].message) {
+      console.log("Invalid response format from OpenAI:", JSON.stringify(response.data));
+      return res.status(500).json({ error: { message: "Invalid response from OpenAI API" } });
+    }
+
     let analysisText = response.data.choices[0].message.content;
+    console.log("Analysis text:", analysisText);
 
     // Extract the RI value using regex
     const riRegex = /Representational\s+Index\s*\(?RI\)?\s*=\s*(\d+\.\d+)/i;
@@ -162,6 +191,9 @@ ${prompt}`;
       if (riValue.split('.')[1].length === 1) {
         riValue = `${riValue}0`;
       }
+      console.log("Extracted RI value:", riValue);
+    } else {
+      console.log("Could not extract RI value from response");
     }
     
     // Extract the explanation text (everything after the RI value statement)
@@ -171,6 +203,9 @@ ${prompt}`;
     
     if (explanationMatch && explanationMatch[1]) {
       explanation = explanationMatch[1].trim();
+      console.log("Extracted explanation:", explanation);
+    } else {
+      console.log("Could not extract explanation from response");
     }
 
     const finalResponse = {
@@ -179,15 +214,34 @@ ${prompt}`;
       explanation: explanation
     };
 
+    console.log("Sending final response to client");
     // Send the response
     res.json(finalResponse);
 
   } catch (error) {
-    console.error("OpenAI API Error:", error.message);
+    console.error("Error in /analyze endpoint:", error);
+    
+    // Detailed error logging
     if (error.response) {
-      console.error("Error response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+      console.error("Response data:", JSON.stringify(error.response.data));
+    } else if (error.request) {
+      console.error("No response received:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
     }
-    res.status(500).json({ error: error.message || "OpenAI request failed" });
+    
+    const errorMessage = error.response?.data?.error?.message || 
+                         error.message || 
+                         "An unknown error occurred";
+                         
+    res.status(500).json({ 
+      error: { 
+        message: errorMessage,
+        details: error.toString()
+      } 
+    });
   }
 });
 
