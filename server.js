@@ -11,9 +11,14 @@ const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// Configure CORS to accept requests from your Kajabi site
+// Configure CORS to accept requests from your sites
 app.use(cors({
-  origin: ['https://robert-clark-4dee.mykajabi.com', 'http://localhost:5000', 'https://ri-backend-bozm.onrender.com'],
+  origin: [
+    'https://robert-clark-4dee.mykajabi.com', 
+    'http://localhost:5000', 
+    'https://ri-backend-bozm.onrender.com',
+    'https://advisory.valoraanalytics.com'  // Add this new origin
+  ],
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
